@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import React, { useState } from 'react';
 import { InputGroup, FormControl, Button, Form } from 'react-bootstrap';
 
