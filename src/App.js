@@ -1,6 +1,6 @@
 /* eslint-disable import/no-anonymous-default-export */
 /* eslint-disable no-lone-blocks */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Container from "react-bootstrap/Container"
 import Button from "react-bootstrap/Button"
 import Card from "./components/Card/card";
@@ -12,140 +12,85 @@ import jojoVillains from "./villains.json";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "./App.css";
 
-//   undo() {
-//     const { removed } = this.state;
-//     this.setState({jojoProtagonists: removed[removed.length - 1]})
-//     removed.splice(removed.length - 1, 1)
-//     this.setState({removed})
-//   }
-
-//   undoAll() {
-//     const { removed } = this.state;
-//     this.setState({ jojoProtagonists: removed[0] })
-//     this.setState({ removed: [] });
-//   }
-
-//   removeAll() {
-//     const { jojoProtagonists, removed } = this.state;
-//     removed.push(jojoProtagonists.join(",").split(","));
-//     jojoProtagonists.splice(0, jojoProtagonists.length);
-//     this.setState({ jojoProtagonists })
-//     this.setState({ removed })
-//   }
-
-//   remove(i) {
-//     const { jojoProtagonists, removed } = this.state;
-//     removed.push(jojoProtagonists.join(",").split(","));
-//     jojoProtagonists.splice(i, 1);
-//     this.setState({ jojoProtagonists })
-//     this.setState({ removed })
-//   }
-
-//   addJojo(jojo) {
-//     const { jojoProtagonists, removed } = this.state;
-//     removed.push(jojoProtagonists.length === 0 ? [] : jojoProtagonists.join(",").split(","));
-//     jojoProtagonists.push(jojo);
-//     this.setState({ jojoProtagonists, removed });
-//   }
-
-
-  
-//   render() {
-//    return (
-//       <Container className="app">
-//         <h1>Jojos</h1>
-//         { false && <Subscription submitText="Submit it" /> }
-//         <AddJojo onAddJojo={this.addJojo.bind(this)}/>
-//         <ul className="protagonists">
-//           { this.state.jojoProtagonists.map((j, i) => <li key={j}>{ j }, { i + 1 }, <Button  variant="outline-danger" onClick={this.remove.bind(this, i)}>x</Button></li>) }
-//         </ul>
-//         <Button onClick={this.removeAll.bind(this)}>Remove All</Button>
-//         { this.state.removed.length > 0 && <div>
-//         <Button onClick={this.undo.bind(this)}>Undo</Button>
-//         { <Button onClick={this.undoAll.bind(this)}>Undo All</Button> }
-//         </div> 
-//          }
-//          <hr />
-//         <h1>Villains</h1>
-//         <AddJojoVillain onAddName={this.addJojoVillain.bind(this, this.onAddImage)} onAddImage={this.addJojoVillain.bind(this)}/>
-//         <div className="grid" dataName="dasdas">
-//           { jojoVillains.map((x, i) => <Card isActive={x.isAlive} title={x.name} imageSrc={x.image} voiceline={x.voiceline}></Card>) }
-//         </div>
-//         <div className="full">
-//           <Card />
-//         </div>
-//       </Container>
-//     );
-//   }
-// }
 export default () => {
 
-  let jojoProtagonists = [];
-  let removed = [];
+  const [jojoProtagonists, setJojoProtagonists] = useState([]);
+  const [history, setHistory] = useState([[]]);
+  const [villains, setVillains] = useState(jojoVillains);
 
-   const addJojo = (jojo) => {
-       removed.push(jojoProtagonists.length === 0 ? [] : jojoProtagonists.join(",").split(","));
-       jojoProtagonists.push(jojo);
-       console.log(jojoProtagonists, jojoProtagonists.length)
-   }
+  const addJojo = (jojo) => {
+    setJojoProtagonists(old => {
+      const temp = [...old, jojo];
+      return temp;
+    });
+  }
 
-   const remove = (i) => {
-     removed.push(jojoProtagonists.join(",").split(","));
-     jojoProtagonists.splice(i, 1);
-   }
+  const remove = (i) => {
+    setJojoProtagonists((old) => {
+      const temp = [...old];
+      temp.splice(i, 1);
+      return temp;
+    });
+  }
 
-   const undo = () => {
-    jojoProtagonists = removed[removed.length - 1]
-    removed.splice(removed.length - 1, 1)
-   }
+  const undo = () => {
+    setHistory((old) => {
+      const temp = [...old];
+      temp.splice(temp.length - 1, 1);
+      setJojoProtagonists(history[history.length - 2]);
+      return temp;
+    });
+  }
 
-   const removeAll = () => {
-     removed = jojoProtagonists
-     jojoProtagonists = [];
-   }
+  const removeAll = () => {
+    setJojoProtagonists([]);
+  }
 
-   const undoAll = () => {
-    jojoProtagonists = removed
-    removed = [];
-   }
-  
-  //  const addJojoVillain(jojoVillain, image, voiceline) {
-  //   jojoVillains.push({
-  //       image: image,
-  //       isAlive: false,
-  //       name: jojoVillain,
-  //       voiceline: voiceline
-  //     })
-  //  }
-   
-//   addJojoVillain(jojoVillain, image) {
-//     // jojoVillains.push({
-//     //   image: image,
-//     //   isAlive: false,
-//     //   name: jojoVillain,
-//     //   voiceline: "test"
-//     // })
-//     console.log(jojoVillain, image)
-//   }
+  const undoAll = () => {
+    setHistory((old) => {
+      const temp = [...old];
+      temp.splice(temp[1], temp.length);
+      setJojoProtagonists(history[0]);
+      return temp;
+    });
+  }
+
+  const addVillain = (villain) => {
+    setVillains(old => {
+      const temp = [...old, villain];
+      return temp
+    })
+    console.log(villain);
+  }
+
+  useEffect(() => {
+    if (history.length && history[history.length - 1].toString() !== jojoProtagonists.toString()) {
+      setHistory(old => [...old, jojoProtagonists]);
+    }
+  }, [jojoProtagonists, history]);
+
   return (
     <>
     <Container className="app">
+       <pre>{JSON.stringify(history, null, 4)}</pre>
     { false && <Subscription submitText="Submit it" /> }
     <h1>Protagonists</h1>
-    <AddJojo onAddJojo={addJojo.bind(this)}/>
+    <AddJojo onAddJojo={(jojo) => addJojo(jojo)}/>
     <ul className="protagonists">
-      { jojoProtagonists.map((j, i) => <li key={j}>{ j }, { i + 1 }, <Button  variant="outline-danger" onClick={remove.bind(this, i)}>x</Button></li>) }
+      { jojoProtagonists.map((j, i) => <li key={j}>{ i + 1 } - { j } <Button  variant="outline-danger" onClick={() => remove(i)}>x</Button></li>) }
     </ul>
-    {removed.length > 0 && <div>
-      <Button onClick={removeAll.bind(this)}>Remove All</Button>
+    {jojoProtagonists.length > 0 && <Button onClick={removeAll.bind(this)}>Remove All</Button>}
+
+
+    {history.length > 1 && <div>
       <Button onClick={undo}>Undo</Button>
       <Button onClick={undoAll.bind(this)}>Undo All</Button>
     </div>}
     <hr />
     <h1>Villains</h1>
-    {/* <AddJojoVillain onAddName={this.addJojoVillain.bind(this, this.onAddImage)} onAddImage={this.addJojoVillain.bind(this)}/> */}
+    <AddJojoVillain onAddVillain={addVillain} />
     <div className="grid">
-    { jojoVillains.map((x, i) => <Card isActive={x.isAlive} title={x.name} imageSrc={x.image} voiceline={x.voiceline}></Card>) }
+    { villains.map((x, i) => <Card isActive={x.isAlive} title={x.name} imageSrc={x.image} voiceline={x.voiceline}></Card>) }
     </div>
     <div className="full">
       <Card />

@@ -1,9 +1,0 @@
-.app {
-  margin: 15px;
-}
-.app .grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 15px;
-  margin-bottom: 15px;
-}
