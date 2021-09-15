@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Dio Brando",
+        "isAlive": false,
+        "image": "https://pbs.twimg.com/profile_images/3635709573/37e4de887c1551f28786575fce9817e2.png",
+        "voiceline": "Wryyyyyyyyyy!"
+    },
+    {
+        "name": "Kars",
+        "isAlive": true,
+        "image": "https://pbs.twimg.com/profile_images/378800000740106046/9a52f878da0df49e463565c044dc78c5.png",
+        "voiceline": "I've never seen anything as wonderful as this! The sun... Finally, I have tamed the sun!!"
+    }
+]
